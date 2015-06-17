@@ -26,8 +26,8 @@ table= "activity_by_user"
 class activity_by_user(Model):
   activity_id = columns.Text(primary_key=True)
   activity_type = columns.Text()
-  lat = columns.BigInt()
-  lon = columns.BigInt()
+  lat = columns.Float()
+  lon = columns.Float()
   time = columns.Text()
   user_id = columns.Text()
   def __repr__(self):
@@ -98,12 +98,14 @@ act.registerTempTable("activity")
 #list = sqlContext.sql("SELECT * FROM activity")
 list = sqlContext.sql("SELECT ActivityID FROM activity WHERE TypeID=20")
 list.show()
-mappedlist=list.map(lambda x: x).collect()
+mappedlist=list.map(lambda x: x.ActivityID).collect()
 print mappedlist
 # collection=mappedlist.collect()
 sync_table(activity_by_user)
-for val in collection:
-	activity_by_user.create(activty_id=val)
+
+for val in mappedlist:
+	savelist=activity_by_user(activty_id=val, activity_type ='null', lat=0.0, lon=0.0, time='null', user_id='null' )
+  savelist.save()
 
 
 
