@@ -7,7 +7,7 @@ from cqlengine import connection
 from cqlengine.management import sync_table
 
 from pyspark.context import SparkConf
-from pyspark_cassandra import CassandraSparkContext, saveToCassandra
+#from pyspark_cassandra import CassandraSparkContext, saveToCassandra
 
 host= "127.0.0.1:9042"
 #or Host="kr-lm-o"
