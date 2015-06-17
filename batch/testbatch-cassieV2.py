@@ -15,9 +15,9 @@ keyspace = "activitydb"
 table= "activity_by_user"
 
 
-#conf = SparkConf().setAppName("PySpark Cassandra")
-#conf.set("spark.cassandra.connection.host", "127.0.0.1")
-#sc = CassandraSparkContext(conf=conf)
+conf = SparkConf().setAppName("PySpark Cassandra")
+conf.set("spark.cassandra.connection.host", "127.0.0.1")
+sc = CassandraSparkContext(conf=conf)
 
 #conf = SparkConf().setAppName("React")
 #sc = SparkContext(conf=conf)
