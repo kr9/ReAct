@@ -33,6 +33,12 @@ class activity_by_user(Model):
   def __repr__(self):
     return '%s %s %f %f %s %s' % (self.activity_id, self.activity_type, self.lat, self.lon, self.time, self.user_id)
 
+class tempactivity(Model):
+  activity_id = columns.Text(primary_key=True)
+  def __repr__(self):
+    return '%s' % (self.activity_id)
+
+
 connection.setup(['127.0.0.1'], "activitydb")
 sc = SparkContext("spark://ip-172-31-23-107:7077", "React")
 sqlContext = SQLContext(sc)
@@ -98,14 +104,14 @@ act.registerTempTable("activity")
 #list = sqlContext.sql("SELECT * FROM activity")
 list = sqlContext.sql("SELECT ActivityID FROM activity WHERE TypeID=20")
 list.show()
-mappedlist=list.map(lambda x: x.ActivityID).collect()
+mappedlist=list.map(lambda x: str(x.ActivityID)).collect()
 print mappedlist
 # collection=mappedlist.collect()
-sync_table(activity_by_user)
+sync_table(tempactivity)
 
 for val in mappedlist:
-	savelist=activity_by_user(activty_id=val, activity_type ='null', lat=0.0, lon=0.0, time='null', user_id='null' )
-  savelist.save()
+tempactivity.create(activty_id=list)
+  
 
 
 
