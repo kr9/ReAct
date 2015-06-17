@@ -33,7 +33,7 @@ class activity_by_user(Model):
   def __repr__(self):
     return '%s %s %f %f %s %s' % (self.activity_id, self.activity_type, self.lat, self.lon, self.time, self.user_id)
 
-connection.setup(['127.0.0.1'], "activtydb")
+connection.setup(['127.0.0.1'], "activitydb")
 sc = SparkContext("spark://ip-172-31-23-107:7077", "React")
 sqlContext = SQLContext(sc)
 
