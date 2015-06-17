@@ -98,11 +98,12 @@ act.registerTempTable("activity")
 #list = sqlContext.sql("SELECT * FROM activity")
 list = sqlContext.sql("SELECT ActivityID FROM activity WHERE TypeID=20")
 list.show()
-mappedlist=list.map()
-collection=mappedlist.collect()
+mappedlist=list.map(lambda x: x).collect()
+print mappedlist
+# collection=mappedlist.collect()
 sync_table(activity_by_user)
 for val in collection:
-	activity_by_user.create(activty_id=val[0])
+	activity_by_user.create(activty_id=val)
 
 
 
