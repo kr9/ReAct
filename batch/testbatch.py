@@ -6,6 +6,13 @@ from cqlengine.models import Model
 from cqlengine import connection
 from cqlengine.management import sync_table
 
+	val conf = new SparkConf(true)
+					.set("spark.cassandra.connection.host", "54.67.124.220")
+    				.setAppName("BatchQueries")
+
+    	val sc = new SparkContext(conf)
+
+
 #conf = SparkConf().setAppName("React")
 #sc = SparkContext(conf=conf)
 sc = SparkContext("spark://ip-172-31-23-107:7077", "React")
@@ -26,6 +33,10 @@ act.registerTempTable("activity")
 #list = sqlContext.sql("SELECT * FROM activity")
 list = sqlContext.sql("SELECT ActivityID FROM activity WHERE TypeID=20")
 list.show()
+
+
+
+#list.saveToCassandra("react", "activity", SomeColumns("activityID", "userid"))
 
 
 #file = sc.textFile("hdfs://"+hdfs+"/"+folder_name+file_name)
