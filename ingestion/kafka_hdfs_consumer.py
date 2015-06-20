@@ -28,12 +28,12 @@ class hdfs_Consumer(object):
         while True:
             try:
             #Get messages equivalent to count
-                messages=self.consumer.get_messages(count=100,block=False)
+                messages=self.consumer.get_messages(count=2000,block=False)
                 for message in messages:
                     one_entry = True
                     self.temp_file.write(message.message.value + "\n")
-                #Divide file into specific size here 1k
-                if self.temp_file.tell() > 2000:
+                #Divide file into specific size
+                if self.temp_file.tell() > 2000000:
                     self.send_to_hdfs(output_dir)
                 self.consumer.commit()
             except:
@@ -57,7 +57,7 @@ class hdfs_Consumer(object):
         self.block_cnt += 1
         print self.block_cnt
         # place blocked messages into history and cached folders on hdfs
-        os.system("sudo -hdfs hdfs dfs -put %s %s" % (self.temp_file_path,hadoop_file_path))
+        os.system("hdfs dfs -put %s %s" % (self.temp_file_path,hadoop_file_path))
         os.system("hdfs dfs -put %s %s" % (self.temp_file_path,cached_file_path))
         os.remove(self.temp_file_path)
 

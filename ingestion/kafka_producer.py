@@ -22,7 +22,7 @@ class kafkaProducer(object):
                 print row
                 timestamp1 = list(time.localtime()[0:6])
                 print timestamp1
-                time.sleep(0.01)
+                #time.sleep(0.01)
 
 activityProducer = kafkaProducer("localhost:9092")
 activityProducer.readAndStream()

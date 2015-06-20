@@ -45,7 +45,7 @@ def read_locations():
     return locations
 
 # Giver current time return what even user is doing based on schedule created
-def create_event(current_time, schedule, user_id, user_location):
+def create_event(current_time, schedule, user_id, name, user_location):
     # If no activity then set to IDLE
     activityType = 'IDLE'
 
@@ -73,12 +73,15 @@ def create_event(current_time, schedule, user_id, user_location):
         activityType = 'SLEEPING'
 
     # Construct json for a given activity details
-    return '{{"uuid": {0:08d}, "timestamp": {1}, "activity": "{2}", "latitude": {3}, "longitude": {4}}}'.format(
+    return '{{"user_id": {0:08d}, "name": "{1}" time": {2}, "activity_type": "{3}", "lat": {4}, "lon": {5}, "zip": {6}, "city": "{7}"}}'.format(
         user_id,
+        name,
         timestamp_serializable(current_time),
         activityType,
         user_location['Latitude'],
-        user_location['Longitude']
+        user_location['Longitude'],
+        user_location['ZipCode'],
+        user_location['City']
     )
 
 # Create random schedule for a given date
@@ -296,17 +299,33 @@ if __name__ == "__main__":
     # Read city locations
     locations = read_locations()
 
+    # Selected user names
+    names = {}
+
     # Produce activity stream for each user between start and end user id
     # supplied in command line
     for user_id in range(start_user_id, end_user_id):
+        # Create random name for user
+        name = fake.name()
+
+        # Keep looking for unique name
+        while name in names:
+            name = fake.name()
+
+        # Add selected name in the dictionary
+        names[name] = 1
+
         # Create file with userid filename to write activity data
         user_file = open("data/{0:08d}.dat".format(user_id), 'w')
         events = []
         # Randomly assign location to user
+        loc = locations[randint(0, len(locations)-1)]
         user_location = get_random_location_around({
-            'Latitude': float(locations[randint(0, len(locations) -1)]['Latitude']),
-            'Longitude': float(locations[randint(0, len(locations) -1)]['Longitude'])
+            'Latitude': float(loc['Latitude']),
+            'Longitude': float(loc['Longitude'])
         }, 10000)
+        user_location['ZipCode'] = loc['ZipCode']
+        user_location['City'] = loc['City']
         days = number_of_days
         # Go through each day and produce activity stream
         # Do this for number of days supplied in command line
@@ -321,7 +340,7 @@ if __name__ == "__main__":
             # Get user activity for the day every 5 mins
             # write to file and print
             while current_time < end_of_day:
-                event = create_event(current_time, schedule, user_id, user_location)
+                event = create_event(current_time, schedule, user_id, name, user_location)
                 print event
                 user_file.write(event + '\n')
                 events.append(event)
