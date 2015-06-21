@@ -14,8 +14,8 @@ object batch_activity
   {
     // -- Initialization --
     val host = "127.0.0.1"
-    val filepath = "hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/hdfs_messages_20150620235308.dat"
-
+    //val filepath = "hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/hdfs_messages_20150620235308.dat"
+    val filepath = "hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/*.dat"
 
     
     val conf = new SparkConf(true).set("spark.cassandra.connection.host", host)
@@ -24,11 +24,11 @@ object batch_activity
     // load JSON files and save as table
     val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 
-    val tempact1 = sqlContext.jsonFile(filepath)
+    val tempact1 = sqlContext.load(filepath,"json")
     //val tempact1 = sqlContext.jsonFile("hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/activityjson.json")
 
-    tempact1.printSchema()
-    
+    //tempact1.printSchema()
+
     tempact1.registerTempTable("activity")
 
     // Insert test data into Activity test table
