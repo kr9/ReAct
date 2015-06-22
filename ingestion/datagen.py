@@ -73,7 +73,7 @@ def create_event(current_time, schedule, user_id, name, user_location):
         activityType = 'SLEEPING'
 
     # Construct json for a given activity details
-    return '{{"user_id": {0:08d}, "name": "{1}" time": {2}, "activity_type": "{3}", "lat": {4}, "lon": {5}, "zip": {6}, "city": "{7}"}}'.format(
+    return '{{"user_id": "{0:08d}", "name": "{1}", "time": "{2}", "activity_type": "{3}", "lat": "{4}", "lon": "{5}", "zip": "{6}", "city": "{7}"}}'.format(
         user_id,
         name,
         timestamp_serializable(current_time),

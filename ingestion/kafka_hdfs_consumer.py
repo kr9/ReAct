@@ -31,7 +31,7 @@ class hdfs_Consumer(object):
                 messages=self.consumer.get_messages(count=2000,block=False)
                 for message in messages:
                     one_entry = True
-                    self.temp_file.write(message.message.value + "\n")
+                    self.temp_file.write(message.message.value)
                 #Divide file into specific size
                 if self.temp_file.tell() > 2000000:
                     self.send_to_hdfs(output_dir)
