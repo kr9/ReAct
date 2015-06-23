@@ -48,7 +48,7 @@ def read_locations():
 def create_event(current_time, schedule, user_id, name, user_location):
     # If no activity then set to IDLE
     activityType = 'IDLE'
-    activityStartTime = schedule['wakeup']
+    activityStartTime = None
 
     # If user has running activity that day
     if schedule['hasRunningActivity']:
@@ -77,17 +77,17 @@ def create_event(current_time, schedule, user_id, name, user_location):
         activityType = 'SLEEPING'
 
     # Construct json for a given activity details
-    return '{{"user_id": "{0:08d}", "name": "{1}", "time": "{2}", "activity_group_id": "{3}", "activity_type": "{4}", "lat": "{5}", "lon": "{6}", "zip": "{7}", "city": "{8}"}}'.format(
-        user_id,
-        name,
-        timestamp_serializable(current_time),
-        timestamp_serializable(activityStartTime),
-        activityType,
-        user_location['Latitude'],
-        user_location['Longitude'],
-        user_location['ZipCode'],
-        user_location['City']
-    )
+    return {
+        "user_id": user_id,
+        "name": name,
+        "time": timestamp_serializable(current_time),
+        "activity_group_id": 0 if activityStartTime is None else timestamp_serializable(activityStartTime),
+        "activity_type": activityType,
+        "lat": user_location['Latitude'],
+        "lon": user_location['Longitude'],
+        "zip": user_location['ZipCode'],
+        "city": user_location['City']
+    }
 
 # Create random schedule for a given date
 def create_schedule(fake, dt):
@@ -287,6 +287,20 @@ def get_random_location_around(location, radius):
         'Longitude': location['Longitude'] + y
     }
 
+# Serialize event to json
+def get_event_json(event):
+    return '{{"user_id": "{0:08d}", "name": "{1}", "time": "{2}", "activity_group_id": "{3}", "activity_type": "{4}", "lat": "{5}", "lon": "{6}", "zip": "{7}", "city": "{8}"}}'.format(
+        event['user_id'],
+        event['name'],
+        event['time'],
+        event['activity_group_id'],
+        event['activity_type'],
+        event['lat'],
+        event['lon'],
+        event['zip'],
+        event['city']
+    )
+
 # Main function
 if __name__ == "__main__":
     # Parse command line arguments
@@ -332,28 +346,38 @@ if __name__ == "__main__":
         user_location['ZipCode'] = loc['ZipCode']
         user_location['City'] = loc['City']
         days = number_of_days
+        prev_event = None
+        current_activity_start_time = None
         # Go through each day and produce activity stream
         # Do this for number of days supplied in command line
         while days >= 0:
-            date_of_activity = datetime.now() - timedelta(hours=days)
+            date_of_activity = datetime.now() - timedelta(days=days)
             # Create day schedule
-            schedule = create_schedule(fake, datetime.now())
+            schedule = create_schedule(fake, date_of_activity)
             # Get start of the day, 0AM
-            current_time = get_start_of_day(datetime.now())
+            current_time = get_start_of_day(date_of_activity)
             # Get end of the day, 11:59:59PM
             end_of_day = get_end_of_day(current_time)
             # Get user activity for the day every 5 mins
             # write to file and print
             while current_time < end_of_day:
                 event = create_event(current_time, schedule, user_id, name, user_location)
-                print event
-                user_file.write(event + '\n')
+                if prev_event is not None:
+                    if prev_event['activity_type'] is not event['activity_type']:
+                        current_activity_start_time = event['time']
+                else:
+                    current_activity_start_time = timestamp_serializable(current_time)
+                if event['activity_group_id'] is 0:
+                    event['activity_group_id'] = current_activity_start_time
+                event_json = get_event_json(event)
+                print event_json
+                user_file.write(event_json + '\n')
                 events.append(event)
                 current_time = current_time + timedelta(minutes=5)
+                prev_event = event
             days -= 1
         # Close the file once done with user
         user_file.close()
-
 
 
 
