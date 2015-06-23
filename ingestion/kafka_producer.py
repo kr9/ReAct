@@ -18,7 +18,7 @@ class kafkaProducer(object):
             with open(file, 'rU') as f:
                 content = f.readlines()
             for row in content:
-                self.producer.send_messages("messages", row)#send message named messages
+                self.producer.send_messages('activity', row)#send message named messages
                 print row
                 timestamp1 = list(time.localtime()[0:6])
                 print timestamp1

@@ -48,17 +48,20 @@ def read_locations():
 def create_event(current_time, schedule, user_id, name, user_location):
     # If no activity then set to IDLE
     activityType = 'IDLE'
+    activityStartTime = 0
 
     # If user has running activity that day
     if schedule['hasRunningActivity']:
         # If current time is within running activity, set activity type to RUNNING
         if schedule['runningStart'] <= current_time <= schedule['runningEnd']:
             activityType = 'RUNNING'
+            activityStartTime = schedule['runningStart']
     # If user has cycling activity that day
     if schedule['hasCyclingActivity']:
         # If current time is within cycling activity, set activity type to CYCLING
         if schedule['cyclingStart'] <= current_time <= schedule['cyclingEnd']:
             activityType = 'CYCLING'
+            activityStartTime = schedule['cyclingStart']
     # If user has walkning activity that day
     if schedule['hasWalkingActivity']:
         # If current time is within first walking activity start and last activity end
@@ -68,6 +71,7 @@ def create_event(current_time, schedule, user_id, name, user_location):
             for i in range(0, schedule['totalTimesWalked']):
                 if schedule['walkingStart' + `i`] <= current_time <= schedule['walkingEnd' + `i`]:
                     activityType = 'WALKING'
+                    activityStartTime = schedule['walkingStart' + `i`]
     # If current time is before wakeup or after sleep set activity type to SLEEPING
     if current_time > schedule['sleep'] or current_time < schedule['wakeup']:
         activityType = 'SLEEPING'
