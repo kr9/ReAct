@@ -48,7 +48,7 @@ def read_locations():
 def create_event(current_time, schedule, user_id, name, user_location):
     # If no activity then set to IDLE
     activityType = 'IDLE'
-    activityStartTime = 0
+    activityStartTime = schedule['wakeup']
 
     # If user has running activity that day
     if schedule['hasRunningActivity']:
@@ -77,10 +77,11 @@ def create_event(current_time, schedule, user_id, name, user_location):
         activityType = 'SLEEPING'
 
     # Construct json for a given activity details
-    return '{{"user_id": "{0:08d}", "name": "{1}", "time": "{2}", "activity_type": "{3}", "lat": "{4}", "lon": "{5}", "zip": "{6}", "city": "{7}"}}'.format(
+    return '{{"user_id": "{0:08d}", "name": "{1}", "time": "{2}", "activity_group_id": "{3}", "activity_type": "{4}", "lat": "{5}", "lon": "{6}", "zip": "{7}", "city": "{8}"}}'.format(
         user_id,
         name,
         timestamp_serializable(current_time),
+        timestamp_serializable(activityStartTime),
         activityType,
         user_location['Latitude'],
         user_location['Longitude'],
