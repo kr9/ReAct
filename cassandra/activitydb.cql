@@ -5,6 +5,13 @@ WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 2};
 
 USE activitydb;
 
+CREATE TABLE user (
+  user_id VARCHAR,
+  name VARCHAR,
+  zip VARCHAR,
+  PRIMARY KEY (user_id)
+);
+
 CREATE TABLE activity_master (
   activity_id UUID,
   activity_type VARCHAR,

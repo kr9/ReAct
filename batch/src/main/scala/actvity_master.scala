@@ -2,87 +2,36 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SQLContext
-import com.datastax.spark.connector._
 import scala.collection.JavaConversions._
-import com.datastax.driver.core.utils._
 import java.util._
+import com.datastax.spark.connector._
+import com.datastax.driver.core.utils._
 
-
-object activity_master
-{
-  def main(args: Array[String]) 
-  {
-    // -- Initialization --
-    val host = "127.0.0.1"
-    //val filepath = "hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/hdfs_messages_20150621025416.dat"
+object activity_master {
+  def main(args: Array[String]) {
     val filepath = "hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/*.dat"
-    //val filepath = "hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/hdfs_messages_20150621034455.dat"
-    
-    val conf = new SparkConf(true).set("spark.cassandra.connection.host", host)
+    val conf = new SparkConf(true).set("spark.cassandra.connection.host", "127.0.0.1")
     val sc = new SparkContext(conf)
-
-    // load JSON files and save as table
     val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 
     val tempact1 = sqlContext.load(filepath,"json")
-    //val tempact1 = sqlContext.jsonFile(filepath)
-    //tempact1.show()
-    tempact1.printSchema()
-
     tempact1.registerTempTable("activity")
 
-    // Insert all into Activity test table
+    // Save users
+    val users = sqlContext.sql("select user_id, name, zip from activity GROUP BY user_id, name, zip")
+    users.printSchema()
+    case class User(user_id: String, name: String, zip: String)
+    val write_user = users.map(u => User(u(1).toString, u(0).toString, u(2).toString))   
+    write_user.saveToCassandra("activitydb", "user")
 
-    // val list = sqlContext.sql("SELECT * FROM activity")
-    // // println("////////////////////////////////////////Total activities: " + list.count)
-    // // list.take(10).foreach(println)
-
-    // // Map DataFrame to an RDD of case classes
-    
-    // case class write_to_activity_master(activity_id: java.util.UUID, 
-    //     user_id: String,
-    //     name: String,
-    //     time: Long,
-    //     activity_type: String, 
-    //     lat: Double, 
-    //     lon: Double, 
-    //     zip: String,
-    //     city: String)
-    
-    // println("case class created////////////////////////////////////////")
-
-    // val write_to_Activity_Master = list.map(s => write_to_activity_master(UUIDs.random(),
-    //     s(6).toString,
-    //     s(4).toString,
-    //     s(5).toString.toLong,
-    //     s(0).toString, 
-    //     s(2).toString.toDouble, 
-    //     s(3).toString.toDouble, 
-    //     s(6).toString,
-    //     s(7).toString ))
-
-    // println("////////////////////////////////////////Total activities mapped: " + write_to_Activity_Master.count)
-    // // Write RDD of case classes into the Cassandra table
-    // write_to_Activity_Master.saveToCassandra("activitydb", "activity_master")
-
-    // println("////////////////////////////////////////Inserted into Cassandra")
-
-    // First batch query to find activity times slots for each user. 
-
-    val user_activity = sqlContext.sql("SELECT user_id, activty_type, zip, 
-                                        MAX(time)-MIN(time) AS duration 
-                                        MIN(time) AS start_time 
-                                        FROM activity 
-                                        GROUP BY user_id,zip,activity_type 
-                                        ORDER BY time")
-    println("////////////////////////////////////////Total activities: " + user_activity.count)
-    // list.take(10).foreach(println)
-
-
-
-
-
-
-
-    }
+    // Save activities
+    val activity_by_user = sqlContext.sql("SELECT user_id, zip, activity_type, activity_group_id, max(time)-min(time) as duration " +
+            "FROM activity " +
+            "GROUP BY zip, user_id, activity_type, activity_group_id " +
+            "ORDER BY user_id")
+    activity_by_user.printSchema()
+    case class Activity(zip: String, activity_type: String, user_id: String, duration: Integer)
+    val write_activity = activity_by_user.map(a => Activity(a(1).toString, a(2).toString, a(0).toString, a(4).toString.toDouble.toInt))   
+    write_activity.saveToCassandra("activitydb", "activity_by_user")
+  }
 }
