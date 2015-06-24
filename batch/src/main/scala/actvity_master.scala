@@ -18,10 +18,10 @@ object activity_master {
     tempact1.registerTempTable("activity")
 
     // Save users
-    val users = sqlContext.sql("select user_id, name, zip from activity GROUP BY user_id, name, zip")
+    val users = sqlContext.sql("select user_id, name, zip, lat, lon from activity GROUP BY user_id, name, zip")
     users.printSchema()
-    case class User(user_id: String, name: String, zip: String)
-    val write_user = users.map(u => User(u(1).toString, u(0).toString, u(2).toString))   
+    case class User(user_id: String, name: String, zip: String, lat: Double, lon: Double)
+    val write_user = users.map(u => User(u(3).toString, u(2).toString, u(4).toString, u(0).toString, u(1).toString))   
     write_user.saveToCassandra("activitydb", "user")
 
     // Save activities

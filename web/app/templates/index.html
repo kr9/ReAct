@@ -1,8 +1,108 @@
-<html>
-  <head>
-     <title>{{title}}</title>
-  </head>
-  <body>
-     <h1>Hello, {{user.nickname}}!</h1>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<title>{{title}}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link href="../static/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+	<link rel="stylesheet" href="//rawgit.com/lvoogdt/Leaflet.awesome-markers/2.0/develop/dist/leaflet.awesome-markers.css">
+	<link rel="stylesheet" href="//birdage.github.io/Leaflet.awesome-markers/dist/leaflet.awesome.rotate.css">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.Default.css">
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css">
+
+</head>
+<body>
+
+	<div class="navbar navbar-default">
+		<div class="container">
+			<a class="navbar-brand" href="#">ReAct</a>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-1">
+				<div class="dropdown">
+					<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+						Users
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1" style="z-index: 999999999">
+						{% for user in users %}
+						<li><a href='javascript: setUser("{{user}}")'>{{user.name}}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+
+			<div class="col-lg-1">
+				<div class="dropdown">
+					<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+						Activity
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+						{% for a in activities %}
+						<li><a href="#">{{a}}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+			<div class="col-lg-1">
+				<input class="btn btn-primary" type="submit" value="Find">
+				
+			</div>
+		</div>
+
+		<div class="row"> 
+			<br>
+			<div class="container">
+				<div class="folium-map" id="map" style="width: 960px; height: 500px"></div>
+			</div>
+		</div>
+		<hr>
+
+		<div id="footer">
+			<div class="container">
+				<p class="text-muted credit">Powered by <a href="#">ReAct</a>.</p>
+			</div>
+		</div>
+
+	</div> <!-- /container -->
+	<!-- script references -->
+
+	<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+	<script src="//rawgithub.com/lvoogdt/Leaflet.awesome-markers/2.0/develop/dist/leaflet.awesome-markers.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster-src.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js"></script>
+	<script src="../static/js/bootstrap.min.js"></script>
+
+	<script>
+
+		var map = L.map('map').setView([33.786594,-118.298662], 12);
+		var gUser;
+
+		 L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		    maxZoom: 18,
+		}).addTo(map);
+
+		var setUser = function(userJson) {
+
+
+
+			userJson = userJson.replace(/u'/g,"'")
+			userJson = userJson.replace(/'/g,"\"")
+			gUser = JSON.parse(userJson)
+
+			var marker_1 = L.marker([gUser.lat,gUser.lon]);
+			marker_1.bindPopup("Mt. Hood Meadows");
+			map.addLayer(marker_1)
+			map.setView([gUser.lat,gUser.lon], 12);
+		}
+  </script>
+
+</body>
 </html>
