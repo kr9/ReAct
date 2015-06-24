@@ -317,6 +317,7 @@ if __name__ == "__main__":
 
     # Read city locations
     locations = read_locations()
+    locations_count = len(locations)-1
 
     # Selected user names
     names = {}
@@ -338,7 +339,7 @@ if __name__ == "__main__":
         user_file = open("data/{0:08d}.dat".format(user_id), 'w')
         events = []
         # Randomly assign location to user
-        loc = locations[randint(0, len(locations)-1)]
+        loc = locations[randint(0, locations_count)]
         user_location = get_random_location_around({
             'Latitude': float(loc['Latitude']),
             'Longitude': float(loc['Longitude'])
