@@ -343,7 +343,7 @@ if __name__ == "__main__":
         user_location = get_random_location_around({
             'Latitude': float(loc['Latitude']),
             'Longitude': float(loc['Longitude'])
-        }, 10000)
+        }, 3000)
         user_location['ZipCode'] = loc['ZipCode']
         user_location['City'] = loc['City']
         days = number_of_days
@@ -374,7 +374,7 @@ if __name__ == "__main__":
                 print event_json
                 user_file.write(event_json + '\n')
                 events.append(event)
-                current_time = current_time + timedelta(minutes=5)
+                current_time = current_time + timedelta(minutes=1)
                 prev_event = event
             days -= 1
         # Close the file once done with user

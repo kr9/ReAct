@@ -71,5 +71,5 @@ class hdfs_Consumer(object):
 if __name__ == '__main__':
 
     print "\nConsuming messages...>"
-    cons = hdfs_Consumer(addr="localhost:9092", group="hdfs", topic="activity")
+    cons = hdfs_Consumer(addr="localhost:9092", group="hdfs", topic="activity_batch")
     cons.consume_topic("/home/ubuntu/react/ingestion/kafka_messages")
