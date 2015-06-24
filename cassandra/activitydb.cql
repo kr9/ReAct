@@ -9,6 +9,8 @@ CREATE TABLE user (
   user_id VARCHAR,
   name VARCHAR,
   zip VARCHAR,
+  lat DOUBLE,
+  lon DOUBLE,
   PRIMARY KEY (user_id)
 );
 
