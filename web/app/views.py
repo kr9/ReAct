@@ -3,7 +3,7 @@ from app import app
 from cassandra.cluster import Cluster
 from flask import Flask, render_template, redirect, url_for, request, jsonify, json
 
-cluster = Cluster(["127.0.0.1"])
+cluster = Cluster(["52.26.58.1"])
 session = cluster.connect()
 session.set_keyspace("activitydb")
 
