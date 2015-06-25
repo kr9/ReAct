@@ -31,5 +31,7 @@ CREATE TABLE activity_by_user (
   zip VARCHAR,
   user_id VARCHAR,
   duration INT,
+  lat DOUBLE,
+  lon DOUBLE,
   PRIMARY KEY ((activity_type, zip), user_id)
 );

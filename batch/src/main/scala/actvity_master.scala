@@ -6,6 +6,7 @@ import scala.collection.JavaConversions._
 import java.util._
 import com.datastax.spark.connector._
 import com.datastax.driver.core.utils._
+import org.apache.spark.api.java.StorageLevels._
 
 object activity_master {
   def main(args: Array[String]) {
@@ -16,6 +17,7 @@ object activity_master {
 
     val tempact1 = sqlContext.load(filepath,"json")
     tempact1.registerTempTable("activity")
+    tempact1.persist(MEMORY_AND_DISK)
 
     // Save users
     val users = sqlContext.sql("select user_id, name, zip, lat, lon from activity GROUP BY user_id, name, zip, lat, lon")
@@ -25,13 +27,13 @@ object activity_master {
     write_user.saveToCassandra("activitydb", "user")
 
     // Save activities
-    val activity_by_user = sqlContext.sql("SELECT user_id, zip, activity_type, activity_group_id, max(time)-min(time) as duration " +
+    val activity_by_user = sqlContext.sql("SELECT user_id, zip, activity_type, activity_group_id, max(time)-min(time) as duration, lat, lon " +
             "FROM activity " +
-            "GROUP BY zip, user_id, activity_type, activity_group_id " +
+            "GROUP BY zip, user_id, activity_type, activity_group_id, lat, lon " +
             "ORDER BY user_id")
     activity_by_user.printSchema()
-    case class Activity(zip: String, activity_type: String, user_id: String, duration: Integer)
-    val write_activity = activity_by_user.map(a => Activity(a(1).toString, a(2).toString, a(0).toString, a(4).toString.toDouble.toInt))   
+    case class Activity(zip: String, activity_type: String, user_id: String, duration: Integer, lat: Double, lon: Double)
+    val write_activity = activity_by_user.map(a => Activity(a(1).toString, a(2).toString, a(0).toString, a(4).toString.toDouble.toInt, a(5).toString.toDouble, a(6).toString.toDouble))   
     write_activity.saveToCassandra("activitydb", "activity_by_user")
   }
 }
