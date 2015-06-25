@@ -45,14 +45,13 @@
 					</button>
 					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 						{% for a in activities %}
-						<li><a href="#">{{a}}</a></li>
+						<li><a href='javascript: setActivityType("{{a}}")'>{{a}}</a></li>
 						{% endfor %}
 					</ul>
 				</div>
 			</div>
 			<div class="col-lg-1">
-				<input class="btn btn-primary" type="submit" value="Find">
-				
+				<input class="btn btn-primary" type="submit" value="Find" onclick="findMatchingUser()">
 			</div>
 		</div>
 
@@ -82,26 +81,62 @@
 
 	<script>
 
-		var map = L.map('map').setView([33.786594,-118.298662], 12);
-		var gUser;
+		var map;
+		var currentUser;
+		var currentActivityType;
+		var markers = new Array();
 
-		 L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		    maxZoom: 18,
-		}).addTo(map);
+		var initMap = function() {
+			map = L.map('map').setView([33.786594,-118.298662], 12);
+			L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				maxZoom: 18,
+			}).addTo(map);
+		};
+
+        var clearMarkers = function() {
+            while(markers.length > 0) {
+                map.removeLayer(markers.pop());
+            }
+        }
 
 		var setUser = function(userJson) {
+			userJson = userJson.replace(/u'/g,"'");
+			userJson = userJson.replace(/'/g,"\"");
+			currentUser = JSON.parse(userJson);
 
+            clearMarkers();
 
+			var marker = L.marker([currentUser.lat, currentUser.lon]);
+			markers.push(marker);
+			map.addLayer(marker);
+			map.setView([currentUser.lat, currentUser.lon], 12);
+		};
 
-			userJson = userJson.replace(/u'/g,"'")
-			userJson = userJson.replace(/'/g,"\"")
-			gUser = JSON.parse(userJson)
+		var setActivityType = function(activityType) {
+		    currentActivityType = activityType
+		};
 
-			var marker_1 = L.marker([gUser.lat,gUser.lon]);
-			marker_1.bindPopup("Mt. Hood Meadows");
-			map.addLayer(marker_1)
-			map.setView([gUser.lat,gUser.lon], 12);
-		}
+		var findMatchingUser = function() {
+		    $.ajax({
+                        url: "/users/" + currentUser.zip + "/" + currentActivityType
+                    })
+                    .done(function( data ) {
+                        if ( console && console.log ) {
+                            clearMarkers();
+                            console.log( "Sample of data:", data );
+                            var response = JSON.parse(data);
+                            for(var i = 0; i < response.usersStats.length; i++) {
+                                user = response.usersStats[i];
+                                var marker = L.marker([user.lat, user.lon]);
+                                markers.push(marker);
+                                map.addLayer(marker);
+                                map.setView([user.lat, user.lon], 20);
+                            }
+                        }
+                    });
+		};
+
+		initMap();
   </script>
 
 </body>
