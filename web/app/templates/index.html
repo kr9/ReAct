@@ -100,8 +100,7 @@
         }
 
 		var setUser = function(userJson) {
-			userJson = userJson.replace(/u'/g,"'");
-			userJson = userJson.replace(/'/g,"\"");
+			userJson = fixJson(userJson);
 			currentUser = JSON.parse(userJson);
 
             clearMarkers();
@@ -116,6 +115,11 @@
 		    currentActivityType = activityType
 		};
 
+		var fixJson = function(json) {
+			var result = json.replace(/u'/g,"'");
+			return result.replace(/'/g,"\"");
+		}
+
 		var findMatchingUser = function() {
 		    $.ajax({
                         url: "/users/" + currentUser.zip + "/" + currentActivityType
@@ -124,13 +128,19 @@
                         if ( console && console.log ) {
                             clearMarkers();
                             console.log( "Sample of data:", data );
-                            var response = JSON.parse(data);
+                            var response = data;
                             for(var i = 0; i < response.usersStats.length; i++) {
                                 user = response.usersStats[i];
+                                if(user.user_id !== currentUser.user_id) {
+                                	var marker = L.marker([currentUser.lat, currentUser.lon]);
+                                	markers.push(marker);
+                                	map.addLayer(marker);
+                                	map.setView([currentUser.lat, currentUser.lon], 20);
+                                	continue;
+                                }
                                 var marker = L.marker([user.lat, user.lon]);
                                 markers.push(marker);
                                 map.addLayer(marker);
-                                map.setView([user.lat, user.lon], 20);
                             }
                         }
                     });

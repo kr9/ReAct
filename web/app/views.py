@@ -3,7 +3,7 @@ from app import app
 from cassandra.cluster import Cluster
 from flask import Flask, render_template, redirect, url_for, request, jsonify, json
 
-cluster = Cluster(['127.0.0.1'])
+cluster = Cluster(['52.26.58.1'])
 session = cluster.connect()
 session.set_keyspace("activitydb")
 
@@ -22,7 +22,7 @@ def map_user(row):
     return {"user_id" : row.user_id, "name" : row.name, "zip" : row.zip, "lat": row.lat, "lon": row.lon }
 
 def map_user_activity(row):
-    return {'user_id' : row.user_id, 'zip' : row.zip, 'activity_type' : row.activity_type, 'duration' : row.duration }
+    return {'user_id' : row.user_id, 'zip' : row.zip, 'activity_type' : row.activity_type, 'duration' : row.duration, "lat": row.lat, "lon": row.lon }
 
 @app.route('/users')
 def all_users():
