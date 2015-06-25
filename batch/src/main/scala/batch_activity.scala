@@ -8,7 +8,7 @@ import com.datastax.spark.connector._
 import com.datastax.driver.core.utils._
 import org.apache.spark.api.java.StorageLevels._
 
-object activity_master {
+object batch_activity {
   def main(args: Array[String]) {
     val filepath = "hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/*.dat"
     val conf = new SparkConf(true).set("spark.cassandra.connection.host", "127.0.0.1")
@@ -17,7 +17,7 @@ object activity_master {
 
     val tempact1 = sqlContext.load(filepath,"json")
     tempact1.registerTempTable("activity")
-    tempact1.persist(MEMORY_AND_DISK)
+    //tempact1.persist(MEMORY_AND_DISK)
 
     // Save users
     val users = sqlContext.sql("select user_id, name, zip, lat, lon from activity GROUP BY user_id, name, zip, lat, lon")

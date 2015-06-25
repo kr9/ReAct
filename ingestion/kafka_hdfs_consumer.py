@@ -28,12 +28,12 @@ class hdfs_Consumer(object):
         while True:
             try:
             #Get messages equivalent to count
-                messages=self.consumer.get_messages(count=20000,block=False)
+                messages=self.consumer.get_messages(count=2000,block=False)
                 for message in messages:
                     one_entry = True
                     self.temp_file.write(message.message.value)
                 #Divide file into specific size (120MB)
-                if self.temp_file.tell() > 120000000:
+                if self.temp_file.tell() > 1200000:
                     self.send_to_hdfs(output_dir)
                 self.consumer.commit()
             except:
