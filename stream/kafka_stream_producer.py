@@ -315,7 +315,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Kafka
-    client = KafkaClient("localhost:9092")
+    client = KafkaClient("ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9092")
     producer = SimpleProducer(client)
 
     fake = Factory.create()
@@ -384,7 +384,7 @@ if __name__ == "__main__":
             # Event json
             event_json = get_event_json(event)
             print event_json
-            producer.send_messages('activity', event_json)
+            producer.send_messages('activity_stream', event_json)
             user_prev_events[user_id] = event
         # Wait a bit
         time.sleep(wait_time)
