@@ -3,8 +3,11 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta charset="utf-8">
-	<title>{{title}}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="robots" content="nofollow" />
+
+	<title>{{title}}</title>
 	<link href="../static/css/bootstrap.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
 	<link rel="stylesheet" href="//rawgit.com/lvoogdt/Leaflet.awesome-markers/2.0/develop/dist/leaflet.awesome-markers.css">
@@ -17,92 +20,176 @@
 
 	<div class="navbar navbar-default">
 		<div class="container">
-			<a class="navbar-brand" href="#">ReAct</a>
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" aria-expanded="false">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" rel="home" href="#" title="ReAct Home">
+					<img style="max-width:30px; margin-top: -4px;" src="../static/img/logo.png">
+				</a>
+				<a class="navbar-brand" href="#">ReAct</a>
+			</div>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Examples <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="#">Matching Users</a></li>
+							<li><a href="#">Daily Averages</a></li>
+						</ul>
+					</li>
+					<li><a href="/slides">Slides <span class="sr-only">(current)</span></a></li>
+					<li><a href="#">About <span class="sr-only">(current)</span></a></li>
+				</ul>
+			</div>
 		</div>
 	</div>
 
-	<div class="container">
-		<div class="row">
-			<div class="col-lg-1">
-				<div class="dropdown">
-					<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-						Users
-						<span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1" style="z-index: 999999999">
-						{% for user in users %}
-						<li><a href='javascript: setUser("{{user}}")'>{{user.name}}</a></li>
-						{% endfor %}
-					</ul>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-2">
+					<div class="dropdown">
+						<button class="btn btn-default dropdown-toggle" type="button" id="user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							Users
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" aria-labelledby="user-dropdown" style="z-index: 999999999">
+							{% for user in users %}
+							<li><a href='javascript: setUser("{{user}}")'>{{user.name}}</a></li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-lg-2">
+					<div class="dropdown">
+						<button class="btn btn-default dropdown-toggle" type="button" id="act-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							Activity
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" aria-labelledby="act-dropdown">
+							{% for a in activities %}
+							<li><a href='javascript: setActivityType("{{a}}")'>{{a}}</a></li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-2">
+					<input class="btn btn-primary" type="submit" value="Find" onclick="findMatchingUser()">
 				</div>
 			</div>
 
-			<div class="col-lg-1">
-				<div class="dropdown">
-					<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-						Activity
-						<span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-						{% for a in activities %}
-						<li><a href="#">{{a}}</a></li>
-						{% endfor %}
-					</ul>
+			<div class="row"> 
+				<br>
+				<div class="container">
+					<div class="folium-map" id="map" style="width: 960px; height: 500px"></div>
 				</div>
 			</div>
-			<div class="col-lg-1">
-				<input class="btn btn-primary" type="submit" value="Find">
-				
+			<hr>
+
+			<div id="footer">
+				<div class="container">
+					<p class="credit">Powered by <a href="#">ReAct</a>.</p>
+				</div>
 			</div>
-		</div>
 
-		<div class="row"> 
-			<br>
-			<div class="container">
-				<div class="folium-map" id="map" style="width: 960px; height: 500px"></div>
-			</div>
-		</div>
-		<hr>
+		</div> <!-- /container -->
+		<!-- script references -->
 
-		<div id="footer">
-			<div class="container">
-				<p class="text-muted credit">Powered by <a href="#">ReAct</a>.</p>
-			</div>
-		</div>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+		<script src="//rawgithub.com/lvoogdt/Leaflet.awesome-markers/2.0/develop/dist/leaflet.awesome-markers.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster-src.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js"></script>
+		<script src="../static/js/bootstrap.min.js"></script>
 
-	</div> <!-- /container -->
-	<!-- script references -->
+		<script>
 
-	<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
-	<script src="//rawgithub.com/lvoogdt/Leaflet.awesome-markers/2.0/develop/dist/leaflet.awesome-markers.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster-src.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js"></script>
-	<script src="../static/js/bootstrap.min.js"></script>
+			var map;
+			var currentUser;
+			var currentActivityType;
+			var markers = new Array();
 
-	<script>
+			var createMarker = function(user) {
+				var marker = L.marker([user.lat, user.lon]);
+				marker.bindPopup('<p class="text-primary">' + user.name + '</p>')
+				map.addLayer(marker);
+			}
 
-		var map = L.map('map').setView([33.786594,-118.298662], 12);
-		var gUser;
+			var clearMarkers = function() {
+				while(markers.length > 0) {
+					map.removeLayer(markers.pop());
+				}
+			}
 
-		 L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		    maxZoom: 18,
-		}).addTo(map);
+			var initMap = function() {
+				map = L.map('map').setView([37.189396,-121.705327], 5);
+				L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					maxZoom: 18,
+				}).addTo(map);
+				$.ajax({
+					url: "/users"
+				})
+				.done(function(data) {
+					if ( console && console.log ) {
+						clearMarkers();
+						var response = data;
+						for(var i = 0; i < response.users.length; i++) {
+							var marker = createMarker(response.users[i]);
+							markers.push(marker)
+						}
+					}
+				});
+			};
 
-		var setUser = function(userJson) {
+			var setUser = function(userJson) {
+				userJson = fixJson(userJson);
+				currentUser = JSON.parse(userJson);
+				createMarker(currentUser);
+				map.setView([currentUser.lat, currentUser.lon], 12);
+			};
 
+			var setActivityType = function(activityType) {
+				currentActivityType = activityType
+			};
 
+			var fixJson = function(json) {
+				var result = json.replace(/u'/g,"'");
+				return result.replace(/'/g,"\"");
+			}
 
-			userJson = userJson.replace(/u'/g,"'")
-			userJson = userJson.replace(/'/g,"\"")
-			gUser = JSON.parse(userJson)
+			var findMatchingUser = function() {
+				$.ajax({
+					url: "/users/" + currentUser.zip + "/" + currentActivityType
+				})
+				.done(function(data) {
+					clearMarkers();
+					console.log("Data: " + data)
+					var response = data;
+					for(var i = 0; i < response.usersStats.length; i++) {
+						user = response.usersStats[i];
+						if(user.user_id !== currentUser.user_id) {
+							var marker = createMarker(currentUser);
+							markers.push(marker);
+							map.setView([currentUser.lat, currentUser.lon], 12);
+							continue;
+						}
+						var marker = createMarker(user);
+						markers.push(marker);
+					}
+				});
+			};
 
-			var marker_1 = L.marker([gUser.lat,gUser.lon]);
-			marker_1.bindPopup("Mt. Hood Meadows");
-			map.addLayer(marker_1)
-			map.setView([gUser.lat,gUser.lon], 12);
-		}
-  </script>
+			initMap();
 
-</body>
-</html>
+			$(".dropdown-menu li a").click(function(){
+				var selText = $(this).text();
+				$(this).parents('.dropdown').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
+			});
+		</script>
+
+	</body>
+	</html>

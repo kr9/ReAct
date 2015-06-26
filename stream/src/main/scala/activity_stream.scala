@@ -17,7 +17,7 @@ object activity_stream {
     val sparkConf = new SparkConf().setAppName("activity_stream").set("spark.cassandra.connection.host", "127.0.0.1")
     
     val ssc = new StreamingContext(sparkConf, Seconds(5))
-    val sqlContext = new org.apache.spark.sql.SQLContext(ssc)
+    //val sqlContext = new org.apache.spark.sql.SQLContext(ssc)
 
 
 
@@ -29,22 +29,26 @@ object activity_stream {
 
     // Get the lines and show results
     messages.foreachRDD { rdd =>
-
         val sqlContext = SQLContextSingleton.getInstance(rdd.sparkContext)
         import sqlContext.implicits._
+        
+        System.out.println("******" + rdd.map(_._2))
 
+        val tempDF = rdd.map(_._2).toDF()
+        System.out.println("******///" + tempDF)
+        
+        // val Temptable= tempDF.registerTempTable("activity")
 
+        // //val lines = rdd.map(_.length)
 
-        val lines = rdd.map(_.length)
+        // // val ticksDF = lines.map( x => {
+        // //                           val tokens = x.split(";")
+        // //                           Tick(tokens(0), tokens(2).toDouble, tokens(3).toInt)}).toDF()
+        // // val ticks_per_source_DF = ticksDF.groupBy("source")
+        // //                         .agg("price" -> "avg", "volume" -> "sum")
+        // //                         .orderBy("source")
 
-        // val ticksDF = lines.map( x => {
-        //                           val tokens = x.split(";")
-        //                           Tick(tokens(0), tokens(2).toDouble, tokens(3).toInt)}).toDF()
-        // val ticks_per_source_DF = ticksDF.groupBy("source")
-        //                         .agg("price" -> "avg", "volume" -> "sum")
-        //                         .orderBy("source")
-
-        lines.show()
+        // Temptable.show()
     }
 
     // Start the computation
@@ -90,12 +94,12 @@ object activity_stream {
 
 
 
-case class Tick(source: String, price: Double, volume: Int)
+//case class Tick(source: String, price: Double, volume: Int)
 
 /** Lazily instantiated singleton instance of SQLContext */
 object SQLContextSingleton {
 
-  @transient  private var instance: SQLContext = _
+  @transient private var instance: SQLContext = _
 
   def getInstance(sparkContext: SparkContext): SQLContext = {
     if (instance == null) {
