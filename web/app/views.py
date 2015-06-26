@@ -48,3 +48,8 @@ def index():
         title = 'ReAct',
         users = get_users(),
         activities = ['WALKING','RUNNING','CYCLING'])
+
+@app.route('/slides')
+def slides():
+    return render_template(
+    "slides.html")
