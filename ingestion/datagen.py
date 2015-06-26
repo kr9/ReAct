@@ -371,12 +371,13 @@ if __name__ == "__main__":
                 if event['activity_group_id'] is 0:
                     event['activity_group_id'] = current_activity_start_time
                 event_json = get_event_json(event)
-                print event_json
+                #print event_json
                 user_file.write(event_json + '\n')
                 events.append(event)
-                current_time = current_time + timedelta(minutes=1)
+                current_time = current_time + timedelta(minutes=5)
                 prev_event = event
             days -= 1
+            #print days
         # Close the file once done with user
         user_file.close()
 

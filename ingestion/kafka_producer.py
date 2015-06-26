@@ -19,9 +19,9 @@ class kafkaProducer(object):
                 content = f.readlines()# Read lines from each file
             for row in content:
                 self.producer.send_messages('activity_batch', row)#send message
-                print row
+                #print row
                 timestamp1 = list(time.localtime()[0:6]) # add timestamp to message 
-                print timestamp1
+                #print timestamp1
                 #time.sleep(0.01)# Opitonal time interval between messages
 
 activityProducer = kafkaProducer("localhost:9092")

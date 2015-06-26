@@ -4,9 +4,10 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SQLContext
 import scala.collection.JavaConversions._
 import java.util._
+import org.apache.spark.api.java.StorageLevels._
 import com.datastax.spark.connector._
 import com.datastax.driver.core.utils._
-import org.apache.spark.api.java.StorageLevels._
+
 
 object batch_activity {
   def main(args: Array[String]) {
@@ -17,7 +18,7 @@ object batch_activity {
 
     val tempact1 = sqlContext.load(filepath,"json")
     tempact1.registerTempTable("activity")
-    //tempact1.persist(MEMORY_AND_DISK)
+    tempact1.persist(MEMORY_AND_DISK)
 
     // Save users
     val users = sqlContext.sql("select user_id, name, zip, lat, lon from activity GROUP BY user_id, name, zip, lat, lon")

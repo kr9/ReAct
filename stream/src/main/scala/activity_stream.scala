@@ -34,7 +34,9 @@ object activity_stream {
         
         System.out.println("******" + rdd.map(_._2))
 
-        // val tempDF = rdd.map(_._2).toDF()
+        val tempDF = rdd.map(_._2).toDF()
+        System.out.println("******///" + tempDF)
+        
         // val Temptable= tempDF.registerTempTable("activity")
 
         // //val lines = rdd.map(_.length)

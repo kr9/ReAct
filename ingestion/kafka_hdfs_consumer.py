@@ -51,11 +51,11 @@ class hdfs_Consumer(object):
 
         hadoop_file_path = "%s/%s_%s_%s.dat" % (self.hadoop_dir_path, self.group,self.topic, timestamp)
         cached_file_path = "%s/%s_%s_%s.dat" % (self.cached_dir_path, self.group,self.topic, timestamp)
-        print hadoop_file_path
-        print cached_file_path
+        #print hadoop_file_path
+        #print cached_file_path
         print "Sending to HDFS ...> block " +str(self.block_cnt)
         self.block_cnt += 1
-        print self.block_cnt
+        #print self.block_cnt
         # place blocked messages into history and cached folders on hdfs
         os.system("hdfs dfs -put %s %s" % (self.temp_file_path,hadoop_file_path))
         os.system("hdfs dfs -put %s %s" % (self.temp_file_path,cached_file_path))
@@ -64,7 +64,7 @@ class hdfs_Consumer(object):
         timestamp = time.strftime('%Y%m%d%H%M%S') # Get current time to append to the filename.
 
         self.temp_file_path = "%s/kafka_%s_%s_%s.dat" % (output_dir,self.topic,self.group,timestamp)
-        print self.temp_file_path
+        #print self.temp_file_path
         self.temp_file = open(self.temp_file_path, "w")
 
 
