@@ -5,6 +5,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
 import org.apache.spark.SparkContext
 import org.apache.spark.sql._
+//import org.apache.spark.sql.SQLContext.createSchemaRDD
 
 object activity_stream {
   def main(args: Array[String]) {
@@ -17,7 +18,7 @@ object activity_stream {
     val sparkConf = new SparkConf().setAppName("activity_stream").set("spark.cassandra.connection.host", "127.0.0.1")
     
     val ssc = new StreamingContext(sparkConf, Seconds(5))
-    //val sqlContext = new org.apache.spark.sql.SQLContext(ssc)
+    val sqlContext = new org.apache.spark.sql.SQLContext(ssc)
 
 
 
@@ -34,10 +35,42 @@ object activity_stream {
         
         System.out.println("******" + rdd.map(_._2))
 
-        val tempDF = rdd.map(_._2).toDF()
-        System.out.println("******///" + tempDF)
+        val jsonrddline= rdd.map(_._2)
+
+        System.out.println("******JSON RDDD LINEEEEEEEEEEEEE" + jsonrddline)
+        val createjsonrddline= ssc.parallelize(
+            """{"user_id": "00210971", "name": "Shamika Trantow DVM", "time": "1435348363", "activity_group_id": "1435348363", "activity_type": "IDLE", "lat": "36.746375", "lon": "-119.639658", "zip": "93792", "city": "Fresno"}""" ::Nil)
         
-        // val Temptable= tempDF.registerTempTable("activity")
+        val tempjson = sqlContext.jsonRDD(createjsonrddline)
+
+        val Temptable= tempjson.registerTempTable("activity")
+
+
+        val tempDF = rdd.map(_._2).toDF()
+        System.out.println("******/// Temp DF is printing.................")
+        tempDF.show()
+        //val tempact1 = sqlContext.read.json(tempDF)
+        //val tempact1 = sqlContext.load(tempDF,"json")
+        //System.out.println("******///" + tempDF)
+
+        
+        //tempact1.registerTempTable("activity")
+
+        
+        //val Temptable= tempDF.registerTempTable("activity")
+
+        val list = sqlContext.sql("SELECT * FROM activity")
+
+        System.out.println("******/// LIST IS PRINTING>>>>..... Select * from activity")
+        list.show()
+
+        // Alternatively, a DataFrame can be created for a JSON dataset represented by
+        // an RDD[String] storing one JSON object per string.
+        // val anotherPeopleRDD = sc.parallelize(
+        // """{"name":"Yin","address":{"city":"Columbus","state":"Ohio"}}""" :: Nil)
+        // val anotherPeople = sqlContext.jsonRDD(anotherPeopleRDD)
+
+
 
         // //val lines = rdd.map(_.length)
 
@@ -48,7 +81,7 @@ object activity_stream {
         // //                         .agg("price" -> "avg", "volume" -> "sum")
         // //                         .orderBy("source")
 
-        // Temptable.show()
+        //Temptable.show()
     }
 
     // Start the computation
@@ -86,15 +119,6 @@ object activity_stream {
 //   }
 // }
 
-
-
-
-
-
-
-
-
-//case class Tick(source: String, price: Double, volume: Int)
 
 /** Lazily instantiated singleton instance of SQLContext */
 object SQLContextSingleton {

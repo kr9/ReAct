@@ -6,15 +6,16 @@ import os
 
 class hdfs_Consumer(object):
 
-    def __init__(self, addr, group, topic): # Initialize consumer object with broker address, group and topic.
+    def __init__(self, addr, group, topic, partition): # Initialize consumer object with broker address, group and topic.
         self.client = KafkaClient(addr)
         self.consumer = SimpleConsumer(self.client, group, topic, max_buffer_size=1310720000)
         self.temp_file_path = None
         self.temp_file = None
-        self.hadoop_dir_path = "/user/react/history"
+        self.hdfs_dir_path = "/user/react/history"
         self.cached_dir_path = "/user/react/cached"
         self.topic = topic
         self.group = group
+        self.partition = partition
         self.block_cnt = 0
 
     def consume_topic(self, output_dir): #Function to consume topic. Temporary output directory to store the buffer.
@@ -46,20 +47,21 @@ class hdfs_Consumer(object):
              self.send_to_hdfs(output_dir,self.topic)
         self.consumer.commit()
 
-    def send_to_hdfs(self, output_dir):
+    def send_to_hdfs(self, output_dir, partition):
         # Sends file into HDFS, output_dir is tempoary directory to store data before transfer
         self.temp_file.close()
         timestamp = time.strftime('%Y%m%d%H%M%S') # Get current time to append to the filename.
+        print "\n parition = %s" %partition
 
-        hadoop_file_path = "%s/%s_%s_%s.dat" % (self.hadoop_dir_path, self.group,self.topic, timestamp)
-        cached_file_path = "%s/%s_%s_%s.dat" % (self.cached_dir_path, self.group,self.topic, timestamp)
-        #print hadoop_file_path
+        hdfs_file_path = "%s/%s_%s_%s_%s.dat" % (self.hdfs_dir_path, self.group,self.partition,self.topic, timestamp)
+        cached_file_path = "%s/%s_%s_%s_%s.dat" % (self.cached_dir_path, self.group,self.partition,self.topic, timestamp)
+        #print hdfs_file_path
         #print cached_file_path
         print "Sending to HDFS ...> block " +str(self.block_cnt)
         self.block_cnt += 1
         #print self.block_cnt
         # place blocked messages into history and cached folders on hdfs
-        os.system("hdfs dfs -put %s %s" % (self.temp_file_path,hadoop_file_path))
+        os.system("hdfs dfs -put %s %s" % (self.temp_file_path,hdfs_file_path))
         os.system("hdfs dfs -put %s %s" % (self.temp_file_path,cached_file_path))
         os.remove(self.temp_file_path)
 
@@ -73,5 +75,5 @@ class hdfs_Consumer(object):
 if __name__ == '__main__':
 
     print "\nConsuming messages...>"
-    cons = hdfs_Consumer(addr="localhost:9092", group="hdfs", topic="activity_batch")
+    cons = hdfs_Consumer(addr="localhost:9092", group="hdfs", topic="activity_stream", partition = "0")
     cons.consume_topic("/home/ubuntu/react/ingestion/kafka_messages")
