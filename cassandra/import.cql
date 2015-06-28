@@ -1,4 +1,4 @@
-COPY user 
-     (user_id, name, zip, lat, lon) 
-FROM 'users.csv' 
+COPY locations 
+     (zip, lat, lon, city, state, county) 
+FROM 'Locations.csv' 
 WITH HEADER = 'true';

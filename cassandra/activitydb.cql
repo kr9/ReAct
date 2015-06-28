@@ -35,3 +35,14 @@ CREATE TABLE activity_by_user (
   lon DOUBLE,
   PRIMARY KEY ((activity_type, zip), user_id)
 );
+CREATE TABLE activity_avg (
+  activity_type VARCHAR,
+  zip VARCHAR,
+  user_id VARCHAR,
+  duration INT,
+  lat DOUBLE,
+  lon DOUBLE,
+  sum DOUBLE,
+  avg DOUBLE,
+  PRIMARY KEY ((activity_type, zip), user_id)
+);
