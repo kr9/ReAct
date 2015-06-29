@@ -18,6 +18,10 @@ def get_user(user_id):
     row = session.execute("SELECT * FROM user WHERE user_id = '{0}'".format(user_id))
     return map_user(row[0])
 
+def get_user_stat(user_id, zip, activity_type):
+    row = session.execute("SELECT * FROM activity_avg WHERE user_id = '{0}' AND zip='{1}' AND activity_type='{2}'".format(user_id, zip, activity_type))
+    return {"user_id" : row[0].user_id, "avg": row[0].avg, "sum": row[0].sum, "activity_type" : row[0].activity_type} if len(row) != 0 else None
+
 def map_user(row):
     return {"user_id" : row.user_id, "name" : row.name, "zip" : row.zip, "lat": row.lat, "lon": row.lon }
 
@@ -31,6 +35,10 @@ def all_users():
 @app.route('/users/<user_id>')
 def search_users_by_id(user_id):
     return jsonify({'user' : get_user(user_id)})
+
+@app.route('/userstats/<user_id>/<zip>/<activity_type>')
+def search_userstats_by_id(user_id, zip, activity_type):
+    return jsonify({'userStats' : get_user_stat(user_id, zip, activity_type)})
 
 @app.route('/users/<zip>/<activity_type>')
 def search_users_by_zip_activity_type(zip, activity_type):
