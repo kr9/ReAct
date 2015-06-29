@@ -14,8 +14,9 @@ import org.apache.spark.sql.GroupedData
 
 object batch_activity {
   def main(args: Array[String]) {
-    //val filepath = "hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/*.dat"
-    val filepath = "hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/hdfs_activity_batch_20150628052422.dat"
+    val filepath = "hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/*.dat"
+    //Test one file
+    //val filepath = "hdfs://ec2-52-26-58-1.us-west-2.compute.amazonaws.com:9000/user/react/history/hdfs_activity_batch_20150628052422.dat"
     // -- Initialization --
     val conf = new SparkConf(true).set("spark.cassandra.connection.host", "127.0.0.1")
     val sc = new SparkContext(conf)
@@ -24,7 +25,7 @@ object batch_activity {
     // load JSON files and save as table
     val tempact1 = sqlContext.load(filepath,"json")
     tempact1.registerTempTable("activity")
-    //tempact1.persist(MEMORY_AND_DISK)
+    tempact1.persist(MEMORY_AND_DISK)
 
     //View content of the table
     //val list = sqlContext.sql("SELECT * FROM activity")
@@ -54,11 +55,17 @@ object batch_activity {
     //activity_avg.foreach(println)
     activity_avg.printSchema()
     activity_avg.show()
-    //activity_avg.show()
-    // Map DataFrame to an RDD of case classes
+    // Map DataFrame to an RDD of case classes - Activity By user 
     // case class Activity(zip: String, activity_type: String, user_id: String, duration: Integer, lat: Double, lon: Double)
     // val write_activity = activity_by_user.map(a => Activity(a(1).toString, a(2).toString, a(0).toString, a(4).toString.toDouble.toInt, a(5).toString.toDouble, a(6).toString.toDouble)) 
     // // Write RDD of case classes into the Cassandra table  
     // write_activity.saveToCassandra("activitydb", "activity_by_user")
+
+    // Map DataFrame to an RDD of case classes - Activity Avg
+    case class Activity_Avg(user_id: String, zip: String,lat: Double, lon: Double, activity_type: String, SUM: Double, AVG: Double)
+    val write_activity_avg = activity_avg.map(a => Activity_Avg(a(0).toString, a(1).toString, a(2).toString.toDouble, a(3).toString.toDouble, a(4).toString, a(5).toString.toDouble, a(6).toString.toDouble)) 
+    // // Write RDD of case classes into the Cassandra table  
+    write_activity_avg.saveToCassandra("activitydb", "activity_avg")
+
   }
 }
