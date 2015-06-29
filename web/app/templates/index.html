@@ -142,7 +142,8 @@
 			var createMarker = function(user) {
 			    if(!(user.user_id in markers)) {
                     var marker = L.marker([user.lat, user.lon], { title: user.user_id });
-                    marker.bindPopup('<p class="text-primary">' + user.name + '</p>');
+                    //marker.bindPopup('<p class="text-primary">' + user.name + '</p>'); 
+                    marker.bindPopup('<p class="text-primary">' + user.name + '<br />' + user.zip + '<br />' + user.user_id +'</p>')
                     marker.on('click', function(e) {
                         var _user = user;
                         $('#user_name').text(_user.name);

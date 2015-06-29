@@ -61,3 +61,8 @@ def index():
 def slides():
     return render_template(
     "slides.html")
+
+@app.route('/links')
+def links():
+    return render_template(
+    "links.html")
