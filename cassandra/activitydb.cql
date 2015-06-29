@@ -46,3 +46,13 @@ CREATE TABLE activity_avg (
   avg DOUBLE,
   PRIMARY KEY ((activity_type, zip), user_id)
 );
+CREATE TABLE locations (
+  zip VARCHAR,
+  lat DOUBLE,
+  lon DOUBLE,
+  city VARCHAR,
+  state VARCHAR,
+  county VARCHAR,
+  PRIMARY KEY (zip)
+);
+
