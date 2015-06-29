@@ -39,7 +39,6 @@ CREATE TABLE activity_avg (
   activity_type VARCHAR,
   zip VARCHAR,
   user_id VARCHAR,
-  duration INT,
   lat DOUBLE,
   lon DOUBLE,
   sum DOUBLE,
@@ -48,8 +47,8 @@ CREATE TABLE activity_avg (
 );
 CREATE TABLE locations (
   zip VARCHAR,
-  lat DOUBLE,
-  lon DOUBLE,
+  lat VARCHAR,
+  lon VARCHAR,
   city VARCHAR,
   state VARCHAR,
   county VARCHAR,
