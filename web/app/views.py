@@ -69,3 +69,7 @@ def slides():
 def links():
     return render_template(
     "links.html")
+@app.route('/video')
+def video():
+    return render_template(
+    "video.html")
