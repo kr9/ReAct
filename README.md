@@ -1,7 +1,7 @@
 # ReAct
 ======================================
 
-## Real activity stats
+## Real Activity stats
 
 ### Finding matching users who are doing similar activities in a geographical area using data from sensors/wearables
 
@@ -11,7 +11,7 @@ How can I find other people who are doing similar activities in my area?
 
 Running, cycling or any other activities are exciting when you have a motivating team. This application finds similar people who are doing matching activities within user's area. 
 
-####DATA PIPELINE
+####Data Pipeline
 ![Data Pipeline](https://raw.githubusercontent.com/kr9/ReAct/master/images/pipeline.png)
 
 ####Data Source
@@ -118,7 +118,7 @@ For example:
 
 
 
-####CLUSTER
+####Cluster
 
 ![Cluster](https://raw.githubusercontent.com/kr9/ReAct/master/images/cluster.png)
 
