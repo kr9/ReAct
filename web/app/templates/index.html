@@ -242,12 +242,17 @@
 			    var latLngBounds = map.getBounds();
 			    var selectedUsers = isMatchingUserOnlyMode ? matchingUsers : allUsers;
 			    clearMarkers();
-
+			    var count = 0;
 			    for (var user_id in selectedUsers) {
+			    	if (count >= 500)
+			    	{
+			    		break;
+			    	}
                     if (selectedUsers.hasOwnProperty(user_id)) {
                         var user = selectedUsers[user_id];
                         if(latLngBounds.contains(L.latLng(user.lat, user.lon))) {
                             createMarker(user);
+                            count ++;
                         }
                     }
                 }
