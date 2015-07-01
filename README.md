@@ -12,12 +12,7 @@ How can I find other people who are doing similar activities in a my area?
 Running, cycling or any other activities are exciting when you have a motivating team. This application finds similar people who are doing matching activities within user's area. 
 
 ####DATA PIPELINE
-
-![MacDown Screenshot](http://d.pr/i/10UGP+)
-
-####CLUSTER
-
-
+![Data Pipeline](https://raw.githubusercontent.com/kr9/ReAct/master/images/pipeline.png)
 
 ####Data Source
 * Sensors 
@@ -122,6 +117,9 @@ For example:
 
 
 
+####CLUSTER
+
+![Cluster](https://raw.githubusercontent.com/kr9/ReAct/master/images/cluster.png)
 
 
 
